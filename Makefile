@@ -182,10 +182,19 @@ test:
 
 # What CI would run. Everything that does not need the board attached.
 check: build test
-	@command -v shellcheck >/dev/null 2>&1 \
-	  && shellcheck -x $(ROOT)scripts/*.sh $(ROOT)scripts/lib/common.sh \
-	  && echo 'shellcheck: clean' \
-	  || echo 'shellcheck: not installed, skipped'
+# The `if` matters. This was written as
+#
+#     command -v shellcheck && shellcheck ... && echo clean || echo skipped
+#
+# where a shellcheck FAILURE short-circuits into the || and prints "not
+# installed, skipped" -- reporting a missing tool, and exiting 0. `make check`
+# could not fail on a shellcheck error, which is the one thing it is for.
+	@if command -v shellcheck >/dev/null 2>&1; then \
+	    shellcheck -x $(ROOT)scripts/*.sh $(ROOT)scripts/lib/common.sh \
+	      && echo 'shellcheck: clean'; \
+	else \
+	    echo 'shellcheck: NOT INSTALLED -- scripts were NOT checked'; \
+	fi
 
 # CLion drives C/C++ from CMake, and PlatformIO generates it. The result is for
 # INDEXING ONLY -- building through CMake does not produce a flashable image.

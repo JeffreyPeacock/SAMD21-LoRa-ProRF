@@ -1,5 +1,8 @@
 # SAMD21-LoRa-ProRF
 
+[![check](https://github.com/JeffreyPeacock/SAMD21-LoRa-ProRF/actions/workflows/ci.yml/badge.svg)](https://github.com/JeffreyPeacock/SAMD21-LoRa-ProRF/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Firmware for a **SparkFun Pro RF - LoRa, 915MHz (SAMD21)** carrying a chain of
 Qwiic sensors: read them, log them to a microSD card, and transmit them over
 LoRa to a second Pro RF acting as a base station.

@@ -1,0 +1,58 @@
+# Build every environment, run the host tests, lint the scripts.
+#
+# This is `make check` and nothing else, deliberately. The Makefile is the
+# entry point for a person at a terminal, and CI running something *different*
+# is how "works on my machine" starts: the two drift, and the one that is
+# wrong is always the one nobody ran.
+#
+# NO HARDWARE IS NEEDED. Everything here compiles or runs on the host --
+# 12 PlatformIO environments, 19 Unity tests on the native platform, and
+# shellcheck over the scripts. Nothing touches a serial port.
+
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # The SAMD21 toolchain and framework are ~200 MB and are fetched on the
+      # first build. Cache them on the lockfile so a normal run does not
+      # re-download an Arduino core to discover that nothing changed.
+      - name: Cache PlatformIO
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.platformio
+            ~/.cache/pip
+          key: pio-${{ runner.os }}-${{ hashFiles('platformio.ini') }}
+          restore-keys: pio-${{ runner.os }}-
+
+      - name: Install PlatformIO
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade platformio
+
+      # Installed explicitly rather than relied upon. `make check` reports
+      # loudly when shellcheck is missing instead of failing, which is right
+      # for a workstation and wrong here -- CI that silently skips a check is
+      # worse than CI that does not run it, because the badge still goes green.
+      - name: Install shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      # PIO is overridden because the Makefile defaults to ~/.local/bin/pio,
+      # which is where a workstation install puts it; pip puts it on PATH.
+      - name: make check
+        run: make check PIO=pio
