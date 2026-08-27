@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pio run*)",
+      "Bash(pio device list)",
+      "Bash(pio pkg list*)",
+      "Bash(pio boards*)",
+      "Bash(shellcheck *)",
+      "Bash(./scripts/board-check.sh*)",
+      "Bash(./scripts/monitor.sh*)",
+      "Bash(udevadm info*)",
+      "Bash(lsusb*)",
+      "Bash(fuser *)",
+      "Bash(pyenv versions*)",
+      "Bash(pyenv prefix*)",
+      "Bash(esptool version)",
+      "WebFetch(domain:learn.sparkfun.com)",
+      "WebFetch(domain:www.sparkfun.com)",
+      "WebFetch(domain:cdn.sparkfun.com)",
+      "WebFetch(domain:docs.platformio.org)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:www.airspayce.com)"
+    ]
+  }
+}

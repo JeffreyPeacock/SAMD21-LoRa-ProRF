@@ -1,0 +1,20 @@
+# SparkFun Pro RF - LoRa, 915MHz (SAMD21), and SparkFun boards generally.
+#
+# PlatformIO's own 99-platformio-udev.rules does NOT cover vendor 1b4f. Checked
+# 2026-08-21 against the copy shipping with PlatformIO 6.1.19: zero entries,
+# case-insensitive. So installing PlatformIO's file silences its warning and
+# leaves this board exposed to the thing the warning is really about.
+#
+# Without this rule the board enumerates with ID_MM_CANDIDATE=1, which means
+# ModemManager will open the port and write AT commands at it to find out
+# whether it is a cellular modem. Two consequences on this hardware:
+#
+#   1. Those bytes arrive at the running sketch. `probe` and `i2c_scan` re-run
+#      on ANY keypress, so they will appear to re-run on their own.
+#   2. If it happens during an upload, it lands in the middle of bossac's
+#      conversation with the SAM-BA bootloader. That failure looks random.
+#
+# Both the application and the SAM-BA bootloader report 1b4f:214f, so matching
+# on the vendor alone covers both states.
+
+ATTRS{idVendor}=="1b4f", MODE:="0666", ENV{ID_MM_DEVICE_IGNORE}="1", ENV{ID_MM_PORT_IGNORE}="1"
